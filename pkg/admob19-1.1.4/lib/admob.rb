@@ -8,7 +8,7 @@ $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__)) ||
 # This module encapsulates functionality (ad requests, analytics requests) provided by AdMob. See README.txt for usage.
 module AdMob
   
-  GEM_VERSION = '1.1.3'
+  GEM_VERSION = '1.1.4'
 
   ENDPOINT = URI.parse('http://r.admob.com/ad_source.php')
   PUBCODE_VERSION = '20090714-RUBY-8708a7ab5f2b70b6'
@@ -116,7 +116,7 @@ module AdMob
     
     # make a new cookie
     ua = request.user_agent || ''
-    value = MD5.hexdigest(rand().to_s + ua + request.remote_ip + Time.now.to_f.to_s)
+    value = Digest::MD5.hexdigest(rand().to_s + ua + request.remote_ip + Time.now.to_f.to_s)
     new_cookie = { :value    => value,
                    :expires  => Time.at(0x7fffffff), # end of 32 bit time
                    :path     => params[:cookie_path] || AdMob::Defaults.cookie_path || "/" }
@@ -190,7 +190,7 @@ private
       'u'         => request.user_agent,
       'i'         => request.remote_ip,
       'p'         => request.request_uri,
-      't'         => MD5.hexdigest(session_id),
+      't'         => Digest::MD5.hexdigest(session_id),
       'v'         => PUBCODE_VERSION,
       'o'         => request.cookies['admobuu'][0] || request.env['admobuu'],
       's'         => publisher_id,
