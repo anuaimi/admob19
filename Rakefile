@@ -1,5 +1,5 @@
 require 'rubygems'
-gem 'hoe', '= 1.12.2'
+gem 'hoe', '= 1.12.2'     # need old version as 2.x has different format
 require 'hoe'
 require './lib/admob.rb'
 

@@ -1,4 +1,4 @@
-= AdMob Ruby on Rails integration code (for Ruby 1.9)
+= AdMob Ruby on Rails integration code (for Rails 3 & Ruby 1.9)
 
 * http://www.admob.com
 
