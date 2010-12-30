@@ -8,7 +8,7 @@ $:.unshift(File.dirname(__FILE__)) unless $:.include?(File.dirname(__FILE__)) ||
 # This module encapsulates functionality (ad requests, analytics requests) provided by AdMob. See README.txt for usage.
 module AdMob
   
-  GEM_VERSION = '1.1.4'
+  GEM_VERSION = '1.1.5'
 
   ENDPOINT = URI.parse('http://r.admob.com/ad_source.php')
   PUBCODE_VERSION = '20090714-RUBY-8708a7ab5f2b70b6'
@@ -161,7 +161,8 @@ private
   # Stores default values for AdMob requests. Set these defaults via AdMob::config.
   class Defaults
     class << self
-      attr_accessor :publisher_id, :analytics_id, :encoding, :timeout, :raise_exceptions, :cookie_domain, :cookie_path
+      attr_accessor :publisher_id, :analytics_id, :encoding, :timeout, :raise_exceptions, 
+                    :cookie_domain, :cookie_path
     end
   end
 
@@ -176,12 +177,15 @@ private
     analytics_request = (params[:analytics_request] != false) && (!analytics_id.nil?) && (!analytics_id.strip.empty?) && (!request.env['admob_pixel_sent'])
     ad_request = (params[:ad_request] != false) && (!publisher_id.nil?) && (!publisher_id.strip.empty?)
 
-    case [fcon, analytics_request]
+    case [ad_request, analytics_request]
     when [false, false] then return nil
     when [true, false] then request_type = 0
     when [false, true] then request_type = 1
     when [true, true] then request_type = 2
     end
+    
+    admob_cookie= request.cookies['admobuu']
+    admob_cookie_char= admob_cookie ? admob_cookie[0] : nil
     
     # Build the basic request
     post_data = {
@@ -189,10 +193,10 @@ private
       'z'         => Time.now.getutc.to_f,
       'u'         => request.user_agent,
       'i'         => request.remote_ip,
-      'p'         => request.request_uri,
+      'p'         => request.fullpath,
       't'         => Digest::MD5.hexdigest(session_id),
       'v'         => PUBCODE_VERSION,
-      'o'         => request.cookies['admobuu'][0] || request.env['admobuu'],
+      'o'         => admob_cookie_char || request.env['admobuu'],
       's'         => publisher_id,
       'a'         => analytics_id,
       'ma'        => params[:markup],
@@ -210,8 +214,11 @@ private
 
     # Add in headers
     ignore_headers = Set['HTTP_PRAGMA', 'HTTP_CACHE_CONTROL', 'HTTP_CONNECTION',
-        'HTTP_USER_AGENT', 'HTTP_COOKIE', 'ADMOB_PIXEL_SENT', 'ADMOBUU']
-    request.env.each {|k,v| post_data["h[#{k}]"] = v unless ignore_headers.include?(k.upcase.gsub(/-/,'_'))}
+                      'HTTP_USER_AGENT', 'HTTP_COOKIE', 'ADMOB_PIXEL_SENT', 'ADMOBUU']
+    request.env.each { |k,v| 
+      #also make sure don't includes rails3 headers 'rack.', 'action_controller.' etc (all lowercase)
+      post_data["h[#{k}]"] = v unless (ignore_headers.include?(k.upcase.gsub(/-/,'_'))) or (k[0] > 'Z')
+    }
 
     # Add in optional data
     post_data['e'] = encoding if encoding

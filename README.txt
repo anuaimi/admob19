@@ -61,23 +61,23 @@ Enables easy integration of AdMob services (ads and/or analytics) into a RoR mob
 
 ==== If you've configured a default publisher and/or analytics id
 
- <%= AdMob::request(request, session.session_id) %>
+ <%= AdMob::request(request, session[:session_id]) %>
 
 ==== If you didn't configure a default publisher_id or want to override the configured default publisher_id
 
- <%= AdMob::request(request, session.session_id, :publisher_id => "YOUR_PUBLISHER_ID") %>
+ <%= AdMob::request(request, session[:session_id], :publisher_id => "YOUR_PUBLISHER_ID") %>
 
 ==== Request a test ad (happens by default when in test or development mode)
 
- <%= AdMob::request(request, session.session_id, :test => true) %>
+ <%= AdMob::request(request, session[:session_id], :test => true) %>
 
 ==== Request an ad, providing demographic info and keywords
 
- <%= AdMob::request(request, session.session_id, :publisher_id => "YOUR_PUBLISHER_ID", :dob => "19800229", :gender => "male", :postal_code => "90210", :keywords => 'ruby gem admob') %>
+ <%= AdMob::request(request, session[:session_id], :publisher_id => "YOUR_PUBLISHER_ID", :dob => "19800229", :gender => "male", :postal_code => "90210", :keywords => 'ruby gem admob') %>
 
 ==== Make an analytics request only
 
- <%= AdMob::request(request, session.session_id, :ad_request => false) %>
+ <%= AdMob::request(request, session[:session_id], :ad_request => false) %>
 
 See the documentation for #AdMob::request for a list of all params that can be set for a request.
 
@@ -87,7 +87,7 @@ See the documentation for #AdMob::request for a list of all params that can be s
 
 == INSTALL:
 
-<tt>sudo gem install admob</tt>
+<tt>sudo gem install admob19</tt>
 
 == HELP:
 
